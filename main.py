@@ -99,18 +99,19 @@ class CoinCollector(arcade.Window):
         self.player.center_x += self.change_x
         self.player.center_y += self.change_y
 
-        enemys_hit = arcade.check_for_collision_with_list(self.player, self.enemy_list)
-        for enemy in enemys_hit:
-            enemy.center_x += enemy.change_x
+        for enemy in self.enemy_list:
+            enemy.center_x -= enemy.change_x
             enemy.center_y += enemy.change_y
 
             if enemy.left < 0 or enemy.right > SCREEN_WIDTH:
                 enemy.change_x *= -1
             if enemy.bottom < 0 or enemy.top > SCREEN_HEIGHT:
                 enemy.change_y *= -1
-                
-            enemy.remove_from_sprite_lists()
-            self.lives -= 1
+
+        enemys_hit = arcade.check_for_collision_with_list(self.player, self.enemy_list)
+        for enemy in enemys_hit:
+           enemy.remove_from_sprite_lists()
+           self.lives -= 1
             
         #keep the square on the screen
         ''' if self.rect_left < 0:
