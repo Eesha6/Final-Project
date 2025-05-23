@@ -70,6 +70,8 @@ class CoinCollector(arcade.Window):
             enemy = arcade.Sprite("cookie_monster.png", 0.3)
             enemy.center_x = SCREEN_WIDTH - 30
             enemy.center_y = random.randint(20, SCREEN_HEIGHT - 20)
+            enemy.change_x = random.choice([-2, -1, 1, 2])
+            enemy.change_y = random.choice([-2, -1, 1, 2])
             self.enemy_list.append(enemy)
 
 
@@ -99,6 +101,14 @@ class CoinCollector(arcade.Window):
 
         enemys_hit = arcade.check_for_collision_with_list(self.player, self.enemy_list)
         for enemy in enemys_hit:
+            enemy.center_x += enemy.change_x
+            enemy.center_y += enemy.change_y
+
+            if enemy.left < 0 or enemy.right > SCREEN_WIDTH:
+                enemy.change_x *= -1
+            if enemy.bottom < 0 or enemy.top > SCREEN_HEIGHT:
+                enemy.change_y *= -1
+                
             enemy.remove_from_sprite_lists()
             self.lives -= 1
             
