@@ -9,7 +9,7 @@ SCREEN_TITLE = "Moving Sprite"
 
 PLAYER_SPEED = 5 
 COIN_COUNT = 10
-ENEMY_COUNT = 4
+ENEMY_COUNT = 5
 
 class CoinCollector(arcade.Window):
     def __init__(self):
@@ -87,6 +87,7 @@ class CoinCollector(arcade.Window):
          
         if self.game_over:
             arcade.draw_text("You win!", SCREEN_WIDTH//2, SCREEN_HEIGHT//2, arcade.color.RED, 50, anchor_x="center")
+
     def on_update(self, delta_time): #put things that change the square
         if self.game_over:
             return
@@ -123,6 +124,8 @@ class CoinCollector(arcade.Window):
 
         if self.score >= 10:
             self.game_over = True 
+        if self.lives == 0:
+            self.game_over = True
             
         #keep the square on the screen
         """
