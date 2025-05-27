@@ -14,7 +14,7 @@ ENEMY_COUNT = 4
 class CoinCollector(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
+        self.game_over = False
         self.score = 0
         self.lives = 5
         self.player = None
@@ -84,9 +84,12 @@ class CoinCollector(arcade.Window):
         self.score_text.draw()
         self.lives_text.draw()
         #arcade.draw_lbwh_rectangle_filled(self.rect_left, self.rect_bottom, RECT_WIDTH, RECT_HEIGHT, arcade.color.PINK)
-
+         
+        if self.game_over:
+            arcade.draw_text("You win!", SCREEN_WIDTH//2, SCREEN_HEIGHT//2, arcade.color.RED, 50, anchor_x="center")
     def on_update(self, delta_time): #put things that change the square
-
+        if self.game_over:
+            return
         self.score_text.text = f"Score: {self.score}"
         self.lives_text.text = f"Lives: {self.lives}"
 
@@ -118,7 +121,8 @@ class CoinCollector(arcade.Window):
            enemy.remove_from_sprite_lists()
            self.lives -= 1
 
-           
+        if self.score >= 10:
+            self.game_over = True 
             
         #keep the square on the screen
         """
