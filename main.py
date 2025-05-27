@@ -9,7 +9,7 @@ SCREEN_TITLE = "Moving Sprite"
 
 PLAYER_SPEED = 5 
 COIN_COUNT = 10
-ENEMY_COUNT = 2
+ENEMY_COUNT = 4
 
 class CoinCollector(arcade.Window):
     def __init__(self):
@@ -100,28 +100,36 @@ class CoinCollector(arcade.Window):
         self.player.center_y += self.change_y
 
         for enemy in self.enemy_list:
-            enemy.center_x -= enemy.change_x
+            enemy.center_x += enemy.change_x * 2
             enemy.center_y += enemy.change_y
 
-            if enemy.left < 0 or enemy.right > SCREEN_WIDTH:
+            if enemy.left < 0 or enemy.left  > SCREEN_WIDTH:
                 enemy.change_x *= -1
-            if enemy.bottom < 0 or enemy.top > SCREEN_HEIGHT:
+            if enemy.bottom < 0 or enemy.bottom  > SCREEN_HEIGHT:
                 enemy.change_y *= -1
+
+              # Occasionally change direction randomly
+            if random.random() < 0.01:
+                enemy.change_x = random.choice([-2, -1, 1, 2])
+                enemy.change_y = random.choice([-2, -1, 1, 2])
 
         enemys_hit = arcade.check_for_collision_with_list(self.player, self.enemy_list)
         for enemy in enemys_hit:
            enemy.remove_from_sprite_lists()
            self.lives -= 1
+
+           
             
         #keep the square on the screen
-        ''' if self.rect_left < 0:
-            self.rect_left = 0 
-        if self.rect_left + RECT_WIDTH > SCREEN_WIDTH:
-            self.rect_left = SCREEN_WIDTH - RECT_WIDTH
-        if self.rect_bottom < 0:
-            self.rect_bottom = 0
-        if self.rect_bottom + RECT_HEIGHT > SCREEN_HEIGHT:
-            self.rect_bottom = SCREEN_HEIGHT - RECT_HEIGHT '''
+        """
+        if self.player_left < 0:
+            self.player_left = 0 
+        if self.player_left + SCREEN_WIDTH > SCREEN_WIDTH:
+            self.player_left = SCREEN_WIDTH - SCREEN_WIDTH
+        if self.player_bottom < 0:
+            self.player_bottom = 0
+        if self.player_bottom + RECT_HEIGHT > SCREEN_HEIGHT:
+            self.player_bottom = SCREEN_HEIGHT - RECT_HEIGHT """
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.RIGHT:
