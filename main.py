@@ -11,10 +11,18 @@ PLAYER_SPEED = 5
 COIN_COUNT = 10
 ENEMY_COUNT = 5
 
+class Enemy(arcade.Sprite):
+    def  __init__(self, image, scale):
+        super().__init__(image, scale)
+        self.enemy_change_x = 0
+        self.enemy_change_y = 0
+
+
 class CoinCollector(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         self.game_over = False
+        self.game_lost = False
         self.score = 0
         self.lives = 5
         self.player = None
@@ -67,11 +75,11 @@ class CoinCollector(arcade.Window):
         
         #load the cookie monster enemies 
         for _ in range(ENEMY_COUNT):
-            enemy = arcade.Sprite("cookie_monster.png", 0.3)
-            enemy.center_x = SCREEN_WIDTH - 30
+            enemy = Enemy("cookie_monster.png", 0.3)
+            enemy.center_x = random.randint(20, SCREEN_WIDTH - 20)
             enemy.center_y = random.randint(20, SCREEN_HEIGHT - 20)
-            enemy.change_x = random.choice([-2, -1, 1, 2])
-            enemy.change_y = random.choice([-2, -1, 1, 2])
+            enemy.enemy_change_x = random.choice([-2, -1, 1, 2])
+            enemy.enemy_change_y = random.choice([-2, -1, 1, 2])
             self.enemy_list.append(enemy)
 
 
@@ -87,9 +95,10 @@ class CoinCollector(arcade.Window):
          
         if self.game_over:
             arcade.draw_text("You win!", SCREEN_WIDTH//2, SCREEN_HEIGHT//2, arcade.color.RED, 50, anchor_x="center")
-
+        elif self.game_lost:
+            arcade.draw_text("You lose!", SCREEN_WIDTH//2, SCREEN_HEIGHT//2, arcade.color.RED, 50, anchor_x="center")
     def on_update(self, delta_time): #put things that change the square
-        if self.game_over:
+        if self.game_over or self.game_lost:
             return
         self.score_text.text = f"Score: {self.score}"
         self.lives_text.text = f"Lives: {self.lives}"
@@ -104,18 +113,15 @@ class CoinCollector(arcade.Window):
         self.player.center_y += self.change_y
 
         for enemy in self.enemy_list:
-            enemy.center_x += enemy.change_x * 2
-            enemy.center_y += enemy.change_y
+            enemy.center_x += enemy.enemy_change_x 
+            enemy.center_y += enemy.enemy_change_y
 
-            if enemy.left < 0 or enemy.left  > SCREEN_WIDTH:
-                enemy.change_x *= -1
-            if enemy.bottom < 0 or enemy.bottom  > SCREEN_HEIGHT:
-                enemy.change_y *= -1
+            if enemy.left <= 0 or enemy.right  >= SCREEN_WIDTH:
+                enemy.enemy_change_x *= -1
+            if enemy.bottom <= 0 or enemy.top >= SCREEN_HEIGHT:
+                enemy.enemy_change_y *= -1
 
-              # Occasionally change direction randomly
-            if random.random() < 0.01:
-                enemy.change_x = random.choice([-2, -1, 1, 2])
-                enemy.change_y = random.choice([-2, -1, 1, 2])
+             
 
         enemys_hit = arcade.check_for_collision_with_list(self.player, self.enemy_list)
         for enemy in enemys_hit:
@@ -124,19 +130,21 @@ class CoinCollector(arcade.Window):
 
         if self.score >= 10:
             self.game_over = True 
-        if self.lives == 0:
-            self.game_over = True
+        if self.lives <= 0:
+            self.game_lost = True
+        #if self.lives == 0:
+            #self.game_over = True
             
         #keep the square on the screen
-        """
-        if self.player_left < 0:
-            self.player_left = 0 
-        if self.player_left + SCREEN_WIDTH > SCREEN_WIDTH:
-            self.player_left = SCREEN_WIDTH - SCREEN_WIDTH
-        if self.player_bottom < 0:
-            self.player_bottom = 0
-        if self.player_bottom + RECT_HEIGHT > SCREEN_HEIGHT:
-            self.player_bottom = SCREEN_HEIGHT - RECT_HEIGHT """
+        
+        if self.player.left < 0:
+            self.player.left = 0 
+        if self.player.right > SCREEN_WIDTH:
+            self.player.right = SCREEN_WIDTH 
+        if self.player.bottom < 0:
+            self.player.bottom = 0
+        if self.player.top > SCREEN_HEIGHT:
+            self.player.top = SCREEN_HEIGHT 
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.RIGHT:
